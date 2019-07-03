@@ -1,5 +1,16 @@
-import React, { Component } from 'react';
-import { Table, Divider, Tag, Input, Button, InputNumber, Modal } from 'antd';
+import React, { Component, useState } from 'react';
+import {
+  Table,
+  Divider,
+  Tag,
+  Input,
+  Button,
+  InputNumber,
+  Modal,
+  Form,
+  Icon,
+  Popconfirm,
+} from 'antd';
 import { connect } from 'dva';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import router from 'umi/router';
@@ -8,6 +19,54 @@ const { Search } = Input;
 import { Tabs } from 'antd';
 
 const { TabPane } = Tabs;
+
+const Froms = Form.create()(props => {
+  const { modelShow, form, handleModalVisible, editvalue } = props;
+  useState();
+  console.log(111);
+  const fromsOk = e => {
+    e.preventDefault();
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+      form.resetFields();
+      editvalue(fieldsValue);
+      handleModalVisible(false);
+    });
+  };
+  const cancel = () => {
+    handleModalVisible();
+  };
+  const { getFieldDecorator, getFieldsError, getFieldError, isFieldTouched } = form;
+  const usernameError = isFieldTouched('username') && getFieldError('username');
+  const ageError = isFieldTouched('age') && getFieldError('age');
+  return (
+    <Modal title="Basic Modal" visible={modelShow} onOk={fromsOk} onCancel={cancel}>
+      <Form.Item validateStatus={usernameError ? 'error' : 'success'} help={usernameError || ''}>
+        {getFieldDecorator('username', {
+          rules: [
+            { required: true, message: 'Please input your username!' },
+            { max: 10, message: '10!' },
+          ],
+        })(
+          <Input
+            prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
+            placeholder="Username"
+          />,
+        )}
+      </Form.Item>
+      <Form.Item validateStatus={ageError ? 'error' : ''} help={ageError || ''}>
+        {getFieldDecorator('age', {
+          rules: [{ required: true, message: 'Please input your age!' }],
+        })(
+          <Input
+            prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
+            placeholder="age"
+          />,
+        )}
+      </Form.Item>
+    </Modal>
+  );
+});
 class Twoau extends Component {
   constructor(props) {
     super(props);
@@ -19,6 +78,7 @@ class Twoau extends Component {
       confirmLoading: false,
       currentData: null,
       selectedRowKeys: [],
+      modelShow: false,
       columns: [
         {
           title: 'NUM',
@@ -30,12 +90,42 @@ class Twoau extends Component {
           title: 'Name',
           dataIndex: 'name',
           key: 'name',
+          filters: [
+            {
+              text: 'Joe',
+              value: 'Joe',
+            },
+            {
+              text: 'Jim',
+              value: 'Jim',
+            },
+            {
+              text: 'Submenu',
+              value: 'Submenu',
+              children: [
+                {
+                  text: 'Green',
+                  value: 'Green',
+                },
+                {
+                  text: 'Black',
+                  value: 'Black',
+                },
+              ],
+            },
+          ],
+          // specify the condition of filtering result
+          // here is that finding the name started with `value`
+          onFilter: (value, record) => record.name.indexOf(value) === 0,
+          sorter: (a, b) => a.name.length - b.name.length,
+          sortDirections: ['ascend', 'descend'],
           render: text => <a href="javascript:;">{text}</a>,
         },
         {
           title: 'Age',
           dataIndex: 'age',
           key: 'age',
+          sorter: (a, b) => a.age - b.age,
         },
         {
           title: 'Address',
@@ -71,12 +161,23 @@ class Twoau extends Component {
                 编辑 {record.name}
               </Button>
               <Divider type="vertical" />
-              <Button type="danger" onClick={() => this.onDel(record)}>
-                Delete
-              </Button>
+
+              <Popconfirm
+                title="Are you sure delete this task?"
+                onConfirm={() => this.onDel(record)}
+                onCancel={() => {}}
+                okText="Yes"
+                cancelText="No"
+              >
+                <Button type="danger">Delete</Button>
+              </Popconfirm>
               <Divider type="vertical" />
               <Button type="danger" onClick={this.onbeizhu.bind(this, record)}>
                 备注
+              </Button>
+              <Divider type="vertical" />
+              <Button type="primary" onClick={this.onxiugai.bind(this, record)}>
+                修改
               </Button>
             </span>
           ),
@@ -102,6 +203,14 @@ class Twoau extends Component {
         },
       ],
     };
+    this.handleModalVisible = this.handleModalVisible.bind(this);
+    this.editvalue = this.editvalue.bind(this);
+  }
+  componentWillReceiveProps(nextProps) {
+    // 父组件重传props时就会调用这个方法
+    if (!nextProps.visible) {
+      this.setState({ bzvalue: '' });
+    }
   }
   onEdit(key, e) {
     console.log(key);
@@ -110,6 +219,12 @@ class Twoau extends Component {
       query: { key },
     };
     router.push(path);
+  }
+  onxiugai(record, e) {
+    this.setState({
+      currentData: record,
+    });
+    this.handleModalVisible(true);
   }
   onbeizhu(record, e) {
     this.setState({
@@ -221,6 +336,20 @@ class Twoau extends Component {
     console.log('selectedRowKeys changed: ', selectedRowKeys);
     this.setState({ selectedRowKeys });
   };
+  handleModalVisible(flag) {
+    this.setState({
+      modelShow: !!flag,
+    });
+  }
+  editvalue(value) {
+    console.log(value);
+    const { currentData } = this.state;
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'two/edittable1',
+      payload: { ...currentData, ...value },
+    });
+  }
   render() {
     const { tabledata, total, size, location, loading, visible, modelloading } = this.props;
     const pagination = {
@@ -244,10 +373,14 @@ class Twoau extends Component {
       },
     ];
 
-    const { activekey, columns, confirmLoading, selectedRowKeys } = this.state;
+    const { activekey, columns, confirmLoading, selectedRowKeys, bzvalue, modelShow } = this.state;
     const rowSelection = {
       selectedRowKeys,
       onChange: this.onSelectChange,
+    };
+    const fromstion = {
+      handleModalVisible: this.handleModalVisible,
+      editvalue: this.editvalue,
     };
     return (
       <PageHeaderWrapper title="adminuser" tabActiveKey={location.pathname} content="adminuser">
@@ -276,8 +409,9 @@ class Twoau extends Component {
           confirmLoading={modelloading}
           onCancel={this.handleCancel.bind(this)}
         >
-          <Input placeholder="备注" onChange={this.onCBeizhu.bind(this)} />
+          <Input placeholder="备注" value={bzvalue} onChange={this.onCBeizhu.bind(this)} />
         </Modal>
+        <Froms {...fromstion} modelShow={modelShow}></Froms>
       </PageHeaderWrapper>
     );
   }

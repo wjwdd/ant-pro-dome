@@ -120,7 +120,7 @@ export default {
           data: newdata(req.body),
         },
       });
-    }, 2000);
+    }, 500);
   },
   'POST /api/addremark': (req, res) => {
     const { remark, key, params } = req.body;
@@ -156,6 +156,19 @@ export default {
           stauts: params.wstatus,
           data: newdata1,
         },
+      });
+    }, 500);
+  },
+  'POST /api/getdetail': (req, res) => {
+    const { key } = req.body;
+    let newdata1 = data.filter(item => {
+      return item.key === key;
+    });
+    setTimeout(() => {
+      res.send({
+        stauts: 1,
+        msg: 'ok',
+        data: newdata1[0],
       });
     }, 2000);
   },
