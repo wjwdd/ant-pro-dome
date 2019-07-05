@@ -146,6 +146,13 @@ export default {
           ],
         },
         {
+          path: '/my',
+          name: 'my',
+          icon: 'smile',
+          authority: ['admin', 'user'],
+          component: './my/my',
+        },
+        {
           component: './404',
         },
       ],

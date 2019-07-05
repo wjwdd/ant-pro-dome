@@ -10,6 +10,7 @@ import {
   Form,
   Icon,
   Popconfirm,
+  Card,
 } from 'antd';
 import { connect } from 'dva';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
@@ -384,23 +385,27 @@ class Twoau extends Component {
     };
     return (
       <PageHeaderWrapper title="adminuser" tabActiveKey={location.pathname} content="adminuser">
-        <Input placeholder="name" onChange={this.onChangeName} />
-        <InputNumber size="large" min={1} max={100000} onChange={this.onChangeAge} />
-        <Button type="primary" onClick={this.onSearch.bind(this)}>
-          搜索
-        </Button>
-        <Tabs defaultActiveKey={activekey} onChange={this.changeTab}>
-          {tablists.map(item => {
-            return <TabPane tab={item.name} key={item.key}></TabPane>;
-          })}
-        </Tabs>
-        <Table
-          rowSelection={rowSelection}
-          loading={loading}
-          columns={columns}
-          dataSource={tabledata}
-          pagination={pagination}
-        />
+        <Card>
+          <Input placeholder="name" onChange={this.onChangeName} />
+          <InputNumber size="large" min={1} max={100000} onChange={this.onChangeAge} />
+          <Button type="primary" onClick={this.onSearch.bind(this)}>
+            搜索
+          </Button>
+          <Tabs defaultActiveKey={activekey} onChange={this.changeTab}>
+            {tablists.map(item => {
+              return <TabPane tab={item.name} key={item.key}></TabPane>;
+            })}
+          </Tabs>
+
+          <Table
+            rowSelection={rowSelection}
+            loading={loading}
+            columns={columns}
+            dataSource={tabledata}
+            pagination={pagination}
+          />
+        </Card>
+
         {/* 备注 */}
         <Modal
           title="备注"

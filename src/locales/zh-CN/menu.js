@@ -3,6 +3,7 @@ export default {
   'menu.more-blocks': '更多区块',
   'menu.home': '首页',
   'menu.two': '权限',
+  'menu.my': '个人',
   'menu.two.apply': 'adminuser',
   'menu.two.apply.list': 'adminuser',
   'menu.two.apply.detail': 'adminuser详情',

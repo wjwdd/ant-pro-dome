@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
-import { Form, Icon, Input, Button, Skeleton, Spin } from 'antd';
+import { Form, Icon, Input, Button, Skeleton, Spin, Card } from 'antd';
 import { connect } from 'dva';
 import router from 'umi/router';
 const CreatFrom = Form.create()(props => {
@@ -53,14 +53,17 @@ const Detail = props => {
   });
   return (
     <div>
-      <Skeleton loading={loading} active={true}>
-        <PageHeaderWrapper>
-          <div>{name}</div>
-          <div>{age}</div>
-          <div>{address}</div>
-          <CreatFrom></CreatFrom>
-        </PageHeaderWrapper>
-      </Skeleton>
+      <PageHeaderWrapper>
+        <Card>
+          <Skeleton loading={loading} active={true}>
+            <div>{name}</div>
+            <div>{age}</div>
+            <div>{address}</div>
+
+            <CreatFrom></CreatFrom>
+          </Skeleton>
+        </Card>
+      </PageHeaderWrapper>
     </div>
   );
 };

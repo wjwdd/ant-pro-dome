@@ -30,6 +30,7 @@ class Login extends Component {
   };
   render() {
     const { getFieldDecorator } = this.props.form;
+    const {loading} =this.props
     return (
       <div className={loginless.con}>
         <Form onSubmit={this.handleSubmit} className={loginless.loginForm}>
@@ -63,7 +64,7 @@ class Login extends Component {
               Forgot password
             </a>
             <Button
-              loading={this.state.loading}
+              loading={loading}
               onClick={this.enterLoading}
               type="primary"
               htmlType="submit"
@@ -79,6 +80,7 @@ class Login extends Component {
   }
 }
 const WrappedNormalLoginForm = Form.create({ name: 'normal_login' })(Login);
-export default connect(({ login }) => ({
+export default connect(({ login,loading }) => ({
   login,
+  loading:loading.effects['login/login'],
 }))(WrappedNormalLoginForm);

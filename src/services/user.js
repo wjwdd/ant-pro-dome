@@ -9,5 +9,5 @@ export async function queryNotices() {
   return request('/api/notices');
 }
 export async function queryLogin(value) {
-  return request('/api/login/account', { method: 'post', data: { ...value } });
+  return request('/api/login/account', { method: 'post', body: { ...value } });
 }
